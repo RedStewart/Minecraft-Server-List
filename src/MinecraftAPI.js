@@ -1,12 +1,12 @@
 const axios = require('axios');
-require('dotenv').config();
+const Config = require('../config/Config.json');
 
 const Logger = require('../tools/Logger');
 
 class MinecraftAPI {
   constructor() {
     this.endpoint = 'https://api.mcsrvstat.us/2';
-    this.serverIp = process.env.SERVER_IP;
+    this.serverIp = Config.serverIp;
   }
 
   async getData() {
