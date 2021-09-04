@@ -1,0 +1,8 @@
+{
+  "serverIp": "",
+  "discord": {
+    "serverName": "",
+    "channelName": "",
+    "botSecretToken": ""
+  }
+}
