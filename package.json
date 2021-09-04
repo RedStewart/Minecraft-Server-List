@@ -2,9 +2,9 @@
   "name": "minecraft-server-list",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "bot.js",
   "scripts": {
-    "start": "node ./src/index.js"
+    "start": "node ./src/bot.js"
   },
   "keywords": [],
   "author": "",
