@@ -1,6 +1,8 @@
 const axios = require('axios');
 require('dotenv').config();
 
+const Logger = require('../tools/Logger');
+
 class MinecraftAPI {
   constructor() {
     this.endpoint = 'https://api.mcsrvstat.us/2';
@@ -14,13 +16,15 @@ class MinecraftAPI {
         url: `${this.endpoint}/${this.serverIp}`
       });
 
+      if (res.data && res.data.online === false)
+        throw { status: 404, msg: 'Server is currently offline' };
+
       if (res.status === 200) return res.data;
 
-      throw { msg: 'Unexpected response from Minecraft API' };
-      console.log(res);
-
-      // if(res.status)
-    } catch (error) {
+      throw { status: 400, msg: 'Unexpected response from Minecraft API' };
+    } catch (e) {
+      if (e.status && e.status.toString().startsWith('4')) Logger.error(e.msg);
+      else Logger.error(e);
       return undefined;
     }
   }
