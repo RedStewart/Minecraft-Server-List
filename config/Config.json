@@ -1,6 +1,7 @@
 {
   "serverIp": "",
   "discord": {
+    "deleteAllMessages": false,
     "serverName": "",
     "channelName": "",
     "botSecretToken": ""
