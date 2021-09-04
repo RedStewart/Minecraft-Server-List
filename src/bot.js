@@ -5,6 +5,8 @@ const { Client, Intents } = require('discord.js');
 const intents = new Intents(32767);
 const client = new Client({ intents });
 
+client.login(Config.discord.botSecretToken);
+
 client.on('ready', () => Logger.log('Bot online...'));
 
 client.on('ready', async (bot) => {
@@ -56,5 +58,3 @@ const deleteChannelMessages = async (channel) => {
 
   for (const msg of messages.values()) await channel.messages.delete(msg.id);
 };
-
-client.login(Config.discord.botSecretToken);
