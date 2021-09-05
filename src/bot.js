@@ -4,6 +4,8 @@ const Config = require('../config/Config.json');
 const Assets = require('../config/Assets.json');
 const MinecraftServer = require('./MinecraftServer');
 const MinecraftAPI = require('./MinecraftAPI');
+const Webhook = require('./Webhook');
+
 const McAPI = new MinecraftAPI();
 const CheckConfig = require('../tools/CheckConfig');
 const { Client, Intents, MessageEmbed } = require('discord.js');
@@ -26,10 +28,8 @@ client.on('ready', async (bot) => {
 
   const minecraftServer = await getServerData();
 
-  console.log(minecraftServer);
-
   // console.log(server);
-  updateChannelMessage(channel, minecraftServer);
+  // updateChannelMessage(channel, minecraftServer);
 });
 
 const getServerIds = (bot) => {
@@ -96,9 +96,6 @@ const getServerData = async () => {
     Config.serverIp,
     playerList,
     serverData.players.max,
-    // serverData.icon
-    //   ? serverData.icon
-    //   : 'https://images.eurogamer.net/2020/articles/2020-09-05-12-53/pack__1_.png/EG11/resize/512x-1/quality/75/format/jpg',
     'https://images.eurogamer.net/2020/articles/2020-09-05-12-53/pack__1_.png/EG11/resize/512x-1/quality/75/format/jpg',
     serverData.motd.clean[0],
     Date.now()
@@ -106,39 +103,12 @@ const getServerData = async () => {
 };
 
 const updateChannelMessage = async (channel, minecraftServer) => {
-  // const messages = await channel.messages.fetch();
+  const webhook = new Webhook(channel, minecraftServer);
 
-  // if (messages.size === 0) {
-  //   // no m
-  // }
-
-  const usersString =
-    minecraftServer.playerList.length > 0
-      ? `🟢 ${minecraftServer.playerList.join('\n🟢 ')}`
-      : '🔴 No Users Online';
-
-  const embedMessage = await channel.send({
-    embeds: [
-      new MessageEmbed()
-        .setColor('#0099ff')
-        .setAuthor(minecraftServer.serverIp, 'https://i.imgur.com/AfFp7pu.png')
-        .setDescription(minecraftServer.motd)
-        .setThumbnail(minecraftServer.icon)
-        .addFields({
-          name: `**Current Active Users** - ${minecraftServer.playerList.length}/${minecraftServer.maxUsers}`,
-          value: usersString
-        })
-        .setImage(Helper.randomArrayElement(Assets.previewImages))
-        .setFooter(
-          `Last Updated: ${Helper.format12HourDate(
-            new Date(minecraftServer.lastUpdated)
-          )}`,
-          'https://i.imgur.com/AfFp7pu.png'
-        )
-    ]
-  });
-
-  embedMessageId = embedMessage.id;
+  if (!embedMessageId) {
+    const embedMessage = await webhook.sendWebhook();
+    embedMessageId = embedMessage.id;
+  }
 
   await Helper.sleep(5000);
 
@@ -147,8 +117,14 @@ const updateChannelMessage = async (channel, minecraftServer) => {
   let x = await message.edit({
     embeds: [
       new MessageEmbed()
-        .setColor('#000000')
-        .setAuthor(minecraftServer.serverIp, 'https://i.imgur.com/AfFp7pu.png')
+        .setTitle(minecraftServer.serverIp)
+
+        .setColor('#ffffff')
+        .setAuthor(
+          'Player List Updated!',
+          'https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/71c6fceb-a2b9-4ccb-9af4-387c330f23e5/d4j5vy7-b3e8d628-ced2-4c4a-89c4-bb1e3fa953dd.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzcxYzZmY2ViLWEyYjktNGNjYi05YWY0LTM4N2MzMzBmMjNlNVwvZDRqNXZ5Ny1iM2U4ZDYyOC1jZWQyLTRjNGEtODljNC1iYjFlM2ZhOTUzZGQucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.5YmIy5ClmnCQOeF5HxVCXxouwkLvgKvFPp4EueJCyqw'
+        )
+        .setDescription(minecraftServer.motd)
         .setDescription('edited')
         .setThumbnail(minecraftServer.icon)
         .addFields({
@@ -160,7 +136,7 @@ const updateChannelMessage = async (channel, minecraftServer) => {
           `Last Updated: ${Helper.format12HourDate(
             new Date(minecraftServer.lastUpdated)
           )}`,
-          'https://i.imgur.com/AfFp7pu.png'
+          'https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/71c6fceb-a2b9-4ccb-9af4-387c330f23e5/d4j5vy7-b3e8d628-ced2-4c4a-89c4-bb1e3fa953dd.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzcxYzZmY2ViLWEyYjktNGNjYi05YWY0LTM4N2MzMzBmMjNlNVwvZDRqNXZ5Ny1iM2U4ZDYyOC1jZWQyLTRjNGEtODljNC1iYjFlM2ZhOTUzZGQucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.5YmIy5ClmnCQOeF5HxVCXxouwkLvgKvFPp4EueJCyqw'
         )
     ]
   });
