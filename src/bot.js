@@ -25,8 +25,6 @@ client.on('ready', async (bot) => {
 
   if (Config.discord.deleteAllMessages) await deleteChannelMessages(channel);
 
-  const minecraftServer = await getServerData();
-
   setInterval(async () => {
     const minecraftServer = await getServerData();
     await updateChannelMessage(channel, minecraftServer);
@@ -91,6 +89,8 @@ const getServerData = async () => {
       await Helper.sleep(3000);
     }
 
+    console.log(serverData);
+
     const playerList =
       serverData.onlinePlayers === 0
         ? []
@@ -99,6 +99,7 @@ const getServerData = async () => {
     return new MinecraftServer(
       Config.serverIp,
       playerList,
+      serverData.onlinePlayers,
       serverData.maxPlayers,
       'https://images.eurogamer.net/2020/articles/2020-09-05-12-53/pack__1_.png/EG11/resize/512x-1/quality/75/format/jpg',
       serverData.description.descriptionText.replace(/\n/g, ' '),

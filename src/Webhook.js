@@ -40,7 +40,7 @@ class Webhook {
           .setDescription(this.mcServcer.description)
           .setThumbnail(this.mcServcer.icon)
           .addFields({
-            name: `**Current Active Users** - ${this.mcServcer.playerList.length}/${this.mcServcer.maxUsers}`,
+            name: `**Current Active Users** - ${this.mcServcer.onlinePlayers}/${this.mcServcer.maxPlayers}`,
             value: usersString
           })
           .setImage(Helper.randomArrayElement(Assets.previewImages))
