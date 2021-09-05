@@ -37,7 +37,7 @@ class Webhook {
             this.mcServcer.playerList.length === 0 ? '#ee5253' : '#1dd1a1'
           )
           .setAuthor('Player List Updated!', this.iconUrl)
-          .setDescription(this.mcServcer.motd)
+          .setDescription(this.mcServcer.description)
           .setThumbnail(this.mcServcer.icon)
           .addFields({
             name: `**Current Active Users** - ${this.mcServcer.playerList.length}/${this.mcServcer.maxUsers}`,
