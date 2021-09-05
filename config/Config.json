@@ -1,5 +1,6 @@
 {
   "serverIp": "",
+  "delay": 10000,
   "discord": {
     "deleteAllMessages": false,
     "serverName": "",
