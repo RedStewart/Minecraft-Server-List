@@ -1,7 +1,6 @@
 const Logger = require('../tools/Logger');
 const Helper = require('../tools/Helper');
 const Config = require('../config/Config.json');
-const Assets = require('../config/Assets.json');
 const MinecraftServer = require('./MinecraftServer');
 const MinecraftAPI = require('./MinecraftAPI');
 const Webhook = require('./Webhook');
@@ -29,7 +28,7 @@ client.on('ready', async (bot) => {
   setInterval(async () => {
     const minecraftServer = await getServerData();
     await updateChannelMessage(channel, minecraftServer);
-  }, 10000);
+  }, Config.delay);
 });
 
 const getServerIds = (bot) => {
