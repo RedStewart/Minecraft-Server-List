@@ -11,7 +11,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.21.1",
     "chalk": "^4.1.2",
     "discord.js": "^13.1.0",
     "minecraft-server-util": "^3.6.0"
