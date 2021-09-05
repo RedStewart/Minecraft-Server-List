@@ -14,6 +14,7 @@ class Helper {
 
     let hours = date.getHours();
     let minutes = date.getMinutes();
+    let seconds = date.getSeconds();
     let milliseconds = date.getMilliseconds();
     const ampm = hours >= 12 ? 'pm' : 'am';
     hours = hours % 12;
@@ -21,10 +22,11 @@ class Helper {
     minutes = minutes < 10 ? '0' + minutes : minutes;
 
     if (hours.toString().length === 1) hours = `0${hours}`;
+    if (seconds.toString().length === 1) seconds = `0${seconds}`;
     if (day.toString().length === 1) day = `0${day}`;
     if (month.toString().length === 1) month = `0${month}`;
 
-    let strTime = `${day}/${month}/${year} ${hours}:${minutes}:${milliseconds} ${ampm}`;
+    let strTime = `${day}/${month}/${year} ${hours}:${minutes}:${seconds}:${milliseconds} ${ampm}`;
     return strTime;
   }
 }
