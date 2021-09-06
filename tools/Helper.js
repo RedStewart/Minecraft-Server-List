@@ -26,7 +26,7 @@ class Helper {
     if (day.toString().length === 1) day = `0${day}`;
     if (month.toString().length === 1) month = `0${month}`;
 
-    let strTime = `${day}/${month}/${year} ${hours}:${minutes}:${seconds}:${milliseconds} ${ampm}`;
+    let strTime = `${day}/${month}/${year} ${hours}:${minutes}:${seconds} ${ampm}`;
     return strTime;
   }
 }
