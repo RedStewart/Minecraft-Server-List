@@ -89,20 +89,22 @@ const getServerData = async () => {
       await Helper.sleep(3000);
     }
 
-    console.log(serverData);
-
     const playerList =
       serverData.onlinePlayers === 0
         ? []
         : serverData.samplePlayers.map((el) => el.name);
+
+    const favicon = serverData.favicon
+      ? serverData.favicon
+      : 'https://images.eurogamer.net/2020/articles/2020-09-05-12-53/pack__1_.png/EG11/resize/512x-1/quality/100/format/jpg';
 
     return new MinecraftServer(
       Config.serverIp,
       playerList,
       serverData.onlinePlayers,
       serverData.maxPlayers,
-      'https://images.eurogamer.net/2020/articles/2020-09-05-12-53/pack__1_.png/EG11/resize/512x-1/quality/75/format/jpg',
-      serverData.description.descriptionText.replace(/\n/g, ' '),
+      favicon,
+      serverData.description.descriptionText,
       Date.now()
     );
   } catch (e) {

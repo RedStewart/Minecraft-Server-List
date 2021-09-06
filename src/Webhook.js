@@ -1,4 +1,4 @@
-const { MessageEmbed } = require('discord.js');
+const { MessageEmbed, MessageAttachment } = require('discord.js');
 const Assets = require('../config/Assets.json');
 const Helper = require('../tools/Helper');
 
@@ -29,7 +29,9 @@ class Webhook {
         ? `🟢 ${this.mcServcer.playerList.join('\n🟢 ')}`
         : '🔴 No Users Online';
 
-    return {
+    const favicon = this.getFavicon();
+
+    let embed = {
       embeds: [
         new MessageEmbed()
           .setTitle(`**${this.mcServcer.serverIp}**`)
@@ -38,7 +40,7 @@ class Webhook {
           )
           .setAuthor('Player List Updated!', this.iconUrl)
           .setDescription(this.mcServcer.description)
-          .setThumbnail(this.mcServcer.icon)
+          .setThumbnail(favicon)
           .addFields({
             name: `**Current Active Users** - ${this.mcServcer.onlinePlayers}/${this.mcServcer.maxPlayers}`,
             value: usersString
@@ -52,6 +54,20 @@ class Webhook {
           )
       ]
     };
+
+    if (typeof favicon === 'object') {
+      embed.files = [{ attachment: favicon, name: 'favicon.png' }];
+      embed.embeds[0].setThumbnail('attachment://favicon.png');
+    }
+
+    return embed;
+  }
+
+  getFavicon() {
+    if (!this.mcServcer.favicon.includes('base64'))
+      return this.mcServcer.favicon;
+
+    return new MessageAttachment(this.mcServcer.favicon, 'favicon.png');
   }
 }
 
