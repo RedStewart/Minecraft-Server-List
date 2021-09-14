@@ -45,7 +45,7 @@ client.on('ready', async (bot: Client) => {
     await deleteChannelMessages(channel as TextChannel); // cast to a TextChannel since Channel class does not have messages property
 
   // setInterval(async () => {
-  //   const minecraftServer = await getServerData();
+  const minecraftServer = await getServerData();
   //   await updateChannelMessage(channel, minecraftServer);
   // }, Config.delay);
 });
@@ -89,45 +89,46 @@ const deleteChannelMessages = async (channel: TextChannel): Promise<void> => {
   for (const msg of messages.values()) await channel.messages.delete(msg.id);
 };
 
-// const getServerData = async () => {
-//   try {
-//     let serverData,
-//       count = 0;
+const getServerData = async (): Promise<MinecraftServer | undefined> => {
+  try {
+    let serverData: object | undefined,
+      count: number = 0;
 
-//     while (!serverData) {
-//       if (count === 4) {
-//         Logger.error(
-//           'Failed to fetch initial Server data, please try again later'
-//         );
-//         process.exit();
-//       }
-//       serverData = await McAPI.getData();
-//       count++;
-//       await Helper.sleep(3000);
-//     }
+    while (!serverData) {
+      if (count === 4) {
+        Logger.error(
+          'Failed to fetch initial Server data, please try again later'
+        );
+        process.exit();
+      }
+      serverData = await McAPI.getData();
+      count++;
+      await Helper.sleep(3000);
+    }
 
-//     const playerList =
-//       serverData.onlinePlayers === 0
-//         ? []
-//         : serverData.samplePlayers.map((el) => el.name);
+    // const playerList: string[] =
+    //   serverData.onlinePlayers === 0
+    //     ? []
+    //     : serverData.samplePlayers.map((el) => el.name);
 
-//     const favicon = serverData.favicon
-//       ? serverData.favicon
-//       : 'https://images.eurogamer.net/2020/articles/2020-09-05-12-53/pack__1_.png/EG11/resize/512x-1/quality/100/format/jpg';
+    // const favicon = serverData.favicon
+    //   ? serverData.favicon
+    //   : 'https://images.eurogamer.net/2020/articles/2020-09-05-12-53/pack__1_.png/EG11/resize/512x-1/quality/100/format/jpg';
 
-//     return new MinecraftServer(
-//       Config.serverIp,
-//       playerList,
-//       serverData.onlinePlayers,
-//       serverData.maxPlayers,
-//       favicon,
-//       serverData.description.descriptionText,
-//       Date.now()
-//     );
-//   } catch (e) {
-//     Logger.error(e);
-//   }
-// };
+    // return new MinecraftServer(
+    //   Config.serverIp,
+    //   playerList,
+    //   serverData.onlinePlayers,
+    //   serverData.maxPlayers,
+    //   favicon,
+    //   serverData.description.descriptionText,
+    //   Date.now()
+    // );
+  } catch (e: any) {
+    Logger.error(e);
+    return;
+  }
+};
 
 // const updateChannelMessage = async (channel, minecraftServer) => {
 //   try {
