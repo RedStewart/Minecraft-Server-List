@@ -1,7 +1,7 @@
-const mcServerUtil = require('minecraft-server-util');
+import mcServerUtil from 'minecraft-server-util';
 
-const Config = require('../config/Config.json');
-const Logger = require('../tools/CustomLogger');
+import Config from '../config/Config.json';
+import Logger from '../tools/CustomLogger';
 
 class MinecraftAPI {
   private serverIp: string;
@@ -14,11 +14,11 @@ class MinecraftAPI {
     try {
       const res: object = await mcServerUtil.status(this.serverIp);
       return res;
-    } catch (e) {
+    } catch (e: any) {
       Logger.error(e);
       return;
     }
   }
 }
 
-module.exports = MinecraftAPI;
+export default MinecraftAPI;

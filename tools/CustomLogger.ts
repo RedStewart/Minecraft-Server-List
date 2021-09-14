@@ -37,4 +37,4 @@ class CustomLogger {
   }
 }
 
-module.exports = CustomLogger;
+export default CustomLogger;

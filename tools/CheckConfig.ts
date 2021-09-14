@@ -1,7 +1,7 @@
-const Config = require('../config/Config.json');
-const Logger = require('./CustomLogger');
+import Config from '../config/Config.json';
+import Logger from './CustomLogger';
 
-const checkConfig = (): void => {
+const CheckConfig = (): void => {
   let errArr: string[] = [];
 
   if (!Config.serverIp)
@@ -21,5 +21,4 @@ const checkConfig = (): void => {
   }
 };
 
-module.exports = checkConfig;
-export {}; // questionable
+export default CheckConfig;

@@ -40,4 +40,4 @@ class MinecraftServer {
     return Buffer.from(icon, 'base64');
   }
 }
-module.exports = MinecraftServer;
+export default MinecraftServer;

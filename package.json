@@ -4,8 +4,8 @@
   "description": "",
   "main": "bot.js",
   "scripts": {
-    "start": "node ./src/bot.js",
-    "dev": "nodemon ./src/bot.js"
+    "start": "node ./dist/src/bot.js",
+    "dev": "nodemon ./dist/src/bot.js"
   },
   "keywords": [],
   "author": "",
