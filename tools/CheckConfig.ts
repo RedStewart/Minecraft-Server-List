@@ -1,8 +1,8 @@
 const Config = require('../config/Config.json');
-const Logger = require('./Logger');
+const Logger = require('./CustomLogger');
 
-module.exports = () => {
-  let errArr = [];
+const checkConfig = (): void => {
+  let errArr: string[] = [];
 
   if (!Config.serverIp)
     errArr.push('Please input a Server IP in the Config.json file');
@@ -16,7 +16,10 @@ module.exports = () => {
     );
 
   if (errArr.length > 0) {
-    errArr.forEach((msg) => Logger.error(msg));
+    errArr.forEach((msg: string): void => Logger.error(msg));
     process.exit();
   }
 };
+
+module.exports = checkConfig;
+export {}; // questionable

@@ -20,11 +20,11 @@ class CustomLogger {
   }
 
   static logTime(): string {
-    let date = new Date();
-    let h = this.formatTime(date.getHours(), 2);
-    let m = this.formatTime(date.getMinutes(), 2);
-    let s = this.formatTime(date.getSeconds(), 2);
-    let ms = this.formatTime(date.getMilliseconds(), 3);
+    let date: Date = new Date();
+    const h: string = this.formatTime(date.getHours(), 2),
+      m: string = this.formatTime(date.getMinutes(), 2),
+      s: string = this.formatTime(date.getSeconds(), 2),
+      ms: string = this.formatTime(date.getMilliseconds(), 3);
     return `[${h}:${m}:${s}:${ms}]`;
   }
 
