@@ -154,7 +154,7 @@ const updateChannelMessage = async (
         'new'
       );
 
-      if (!embedMessageId) return;
+      if (!embedMessageData) return;
 
       embedMessageId = embedMessageData!.id;
 
