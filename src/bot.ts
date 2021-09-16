@@ -7,6 +7,7 @@ import {
   Message,
   Collection
 } from 'discord.js';
+import { StatusResponse } from 'minecraft-server-util/dist/model/StatusResponse';
 
 import Logger from '../tools/CustomLogger';
 import Helper from '../tools/Helper';
@@ -14,17 +15,16 @@ import Config from '../config/Config.json';
 import CheckConfig from '../tools/CheckConfig';
 import MinecraftServer from './MinecraftServer';
 import MinecraftAPI from './MinecraftAPI';
-import Webhook from './Webhook';
+import DiscordWebhook from './Webhook';
 
 const McAPI: MinecraftAPI = new MinecraftAPI();
 const intents: Intents = new Intents(32767);
 const client: Client = new Client({ intents });
-let embedMessage: string, embedMessageId: string;
+let embedMessage: Message, embedMessageId: string;
 
 CheckConfig();
 
 client.login(Config.discord.botSecretToken);
-console.log('one');
 
 client.on('ready', () => Logger.log('Bot online...'));
 
@@ -44,10 +44,16 @@ client.on('ready', async (bot: Client) => {
   if (Config.discord.deleteAllMessages)
     await deleteChannelMessages(channel as TextChannel); // cast to a TextChannel since Channel class does not have messages property
 
-  // setInterval(async () => {
-  const minecraftServer = await getServerData();
-  //   await updateChannelMessage(channel, minecraftServer);
-  // }, Config.delay);
+  setInterval(async () => {
+    const minecraftServer: MinecraftServer | undefined = await getServerData();
+
+    if (!minecraftServer) {
+      Logger.error('Failed to create MinecraftServer object');
+      return;
+    }
+
+    await updateChannelMessage(channel as TextChannel, minecraftServer);
+  }, Config.delay);
 });
 
 const getServerIds = (bot: Client): { serverId: string; channelId: string } => {
@@ -91,7 +97,7 @@ const deleteChannelMessages = async (channel: TextChannel): Promise<void> => {
 
 const getServerData = async (): Promise<MinecraftServer | undefined> => {
   try {
-    let serverData: object | undefined,
+    let serverData: StatusResponse | undefined,
       count: number = 0;
 
     while (!serverData) {
@@ -106,45 +112,62 @@ const getServerData = async (): Promise<MinecraftServer | undefined> => {
       await Helper.sleep(3000);
     }
 
-    // const playerList: string[] =
-    //   serverData.onlinePlayers === 0
-    //     ? []
-    //     : serverData.samplePlayers.map((el) => el.name);
+    const playerList: string[] =
+      serverData.onlinePlayers === 0 || serverData.samplePlayers === null
+        ? []
+        : serverData.samplePlayers.map(
+            (el: { id: string; name: string }) => el.name
+          );
 
-    // const favicon = serverData.favicon
-    //   ? serverData.favicon
-    //   : 'https://images.eurogamer.net/2020/articles/2020-09-05-12-53/pack__1_.png/EG11/resize/512x-1/quality/100/format/jpg';
+    const favicon: string = serverData.favicon
+      ? serverData.favicon
+      : 'https://images.eurogamer.net/2020/articles/2020-09-05-12-53/pack__1_.png/EG11/resize/512x-1/quality/100/format/jpg';
 
-    // return new MinecraftServer(
-    //   Config.serverIp,
-    //   playerList,
-    //   serverData.onlinePlayers,
-    //   serverData.maxPlayers,
-    //   favicon,
-    //   serverData.description.descriptionText,
-    //   Date.now()
-    // );
+    return new MinecraftServer(
+      Config.serverIp,
+      playerList,
+      { online: serverData.onlinePlayers, max: serverData.maxPlayers },
+      favicon,
+      serverData.description !== null
+        ? serverData.description.descriptionText
+        : '',
+      Date.now()
+    );
   } catch (e: any) {
     Logger.error(e);
     return;
   }
 };
 
-// const updateChannelMessage = async (channel, minecraftServer) => {
-//   try {
-//     const webhook = new Webhook(channel, minecraftServer);
-//     if (!embedMessageId) {
-//       const embedMessageData = await webhook.sendWebhook('new');
-//       embedMessageId = embedMessageData.id;
-//       embedMessage = await channel.messages.fetch(embedMessageId);
-//       return;
-//     }
-//     webhook.embedMessage = embedMessage;
+const updateChannelMessage = async (
+  channel: TextChannel,
+  minecraftServer: MinecraftServer
+) => {
+  try {
+    const webhook: DiscordWebhook = new DiscordWebhook(
+      channel,
+      minecraftServer
+    );
 
-//     await webhook.sendWebhook('update');
-//   } catch (e) {
-//     Logger.error(e);
-//   }
-// };
+    if (!embedMessageId) {
+      const embedMessageData: Message | undefined = await webhook.sendWebhook(
+        'new'
+      );
+
+      if (!embedMessageId) return;
+
+      embedMessageId = embedMessageData!.id;
+
+      embedMessage = await channel.messages.fetch(embedMessageId);
+      return;
+    }
+
+    webhook.embedMessage = embedMessage;
+
+    await webhook.sendWebhook('update');
+  } catch (e: any) {
+    Logger.error(e);
+  }
+};
 
 export {};
