@@ -1,35 +1,30 @@
 class MinecraftServer {
-  private serverIp: string;
-  private playerList: string[];
-  // private onlinePlayers: number;
-  // private maxPlayers: number;
-  private playerCount: object;
-  private favicon: string | Buffer;
-  private description: string;
-  private lastUpdated: Date;
+  public serverIp: string;
+  public playerList: string[];
+  public playerCount: PlayerCount;
+  public favicon: string | Buffer;
+  public description: string;
+  public lastUpdated: number;
+
   constructor(
     serverIp: string,
     playerList: string[],
-    playerCount: { online: number; max: number } = {
+    playerCount: PlayerCount = {
       online: 0,
       max: 0
     },
-    // onlinePlayers: number,
-    // maxPlayers: number,
     favicon: string, // import only as string as never will import as a buffer
     description: string,
-    lastUpdated: Date
+    lastUpdated: number
   ) {
     this.serverIp = serverIp;
     this.playerList = playerList;
     this.playerCount = playerCount;
-    // this.onlinePlayers = onlinePlayers;
-    // this.maxPlayers = maxPlayers;
     this.favicon = this.parseFavicon(favicon);
     this.description = description
-      .trim()
       .replace(/\n/g, ' ')
-      .replace(/§([a-z]{1})|§([A-Z]{1})|§(\d{1})/g, ' ');
+      .replace(/§([a-z]{1})|§([A-Z]{1})|§(\d{1})/g, ' ')
+      .trim();
     this.lastUpdated = lastUpdated;
   }
 
@@ -40,4 +35,10 @@ class MinecraftServer {
     return Buffer.from(icon, 'base64');
   }
 }
+
+type PlayerCount = {
+  online: number | null;
+  max: number | null;
+};
+
 export default MinecraftServer;
