@@ -1,4 +1,4 @@
-const chalk = require('chalk');
+import chalk from "chalk";
 
 class CustomLogger {
   static log(msg: string): void {
@@ -30,7 +30,7 @@ class CustomLogger {
 
   static formatTime(num: number, paddingCount: number): string {
     let timeFormat: string = num.toString();
-    while (num.toString().length < paddingCount) {
+    while (timeFormat.length < paddingCount) {
       timeFormat = '0' + timeFormat;
     }
     return timeFormat;
