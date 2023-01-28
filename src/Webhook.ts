@@ -2,10 +2,10 @@ import Assets from '../config/Assets.json';
 import Helper from '../tools/Helper';
 import MinecraftServer from './MinecraftServer';
 import {
-  MessageEmbed,
-  MessageAttachment,
+  AttachmentBuilder,
+  EmbedBuilder,
   TextChannel,
-  Message
+  Message,
 } from 'discord.js';
 
 class Webhook {
@@ -37,33 +37,57 @@ class Webhook {
         ? `🟢 ${this.mcServer.playerList.join('\n🟢 ')}`
         : '🔴 No Users Online';
 
-    const favicon: string | Buffer | MessageAttachment = this.getFavicon();
+    const favicon: string | Buffer | AttachmentBuilder = this.getFavicon();
 
     const { max: maxPlayers, online: onlinePlayers } =
       this.mcServer.playerCount;
 
+    // console.log(this.mcServer.favicon);
+    // console.log(this.mcServer.favicon.includes('base64'));
+
     let embed: DiscordMessageEmbed = {
       embeds: [
-        new MessageEmbed()
+        new EmbedBuilder()
           .setTitle(`**${this.mcServer.serverIp}**`)
           .setColor(
             this.mcServer.playerList.length === 0 ? '#ee5253' : '#1dd1a1'
           )
-          .setAuthor('Player List Updated!', this.iconUrl)
+          .setAuthor({ name: 'Player List Updated!', iconURL: this.iconUrl })
           .setDescription(this.mcServer.description)
-          .setThumbnail(favicon.toString())
+          // .setThumbnail(favicon.toString())
+          // .setThumbnail()
           .addFields({
             name: `**Current Active Users** - ${onlinePlayers}/${maxPlayers}`,
-            value: usersString
+            value: usersString,
           })
           .setImage(Helper.randomArrayElement(Assets.previewImages))
-          .setFooter(
-            `Last Updated: ${Helper.format12HourDate(
+          .setFooter({
+            text: `Last Updated: ${Helper.format12HourDate(
               new Date(this.mcServer.lastUpdated)
             )}`,
-            this.iconUrl
-          )
-      ]
+            iconURL: this.iconUrl,
+          }),
+
+        // new MessageEmbed()
+        //   .setTitle(`**${this.mcServer.serverIp}**`)
+        //   .setColor(
+        //     this.mcServer.playerList.length === 0 ? '#ee5253' : '#1dd1a1'
+        //   )
+        //   .setAuthor('Player List Updated!', this.iconUrl)
+        //   .setDescription(this.mcServer.description)
+        //   .setThumbnail(favicon.toString())
+        //   .addFields({
+        //     name: `**Current Active Users** - ${onlinePlayers}/${maxPlayers}`,
+        //     value: usersString,
+        //   })
+        //   .setImage(Helper.randomArrayElement(Assets.previewImages))
+        //   .setFooter(
+        //     `Last Updated: ${Helper.format12HourDate(
+        //       new Date(this.mcServer.lastUpdated)
+        //     )}`,
+        //     this.iconUrl
+        //   ),
+      ],
     };
 
     if (typeof favicon === 'object') {
@@ -73,15 +97,17 @@ class Webhook {
     return embed;
   }
 
-  getFavicon(): string | Buffer | MessageAttachment {
+  getFavicon(): string | Buffer | AttachmentBuilder {
     if (!this.mcServer.favicon.includes('base64')) return this.mcServer.favicon;
-    return new MessageAttachment(this.mcServer.favicon, 'favicon.png');
+    return new AttachmentBuilder(this.mcServer.favicon, {
+      name: 'favicon.png',
+    });
   }
 }
 
 type DiscordMessageEmbed = {
-  embeds: MessageEmbed[];
-  files?: { attachment: Buffer | MessageAttachment; name: string }[];
+  embeds: EmbedBuilder[];
+  files?: { attachment: Buffer | AttachmentBuilder; name: string }[];
 };
 
 export default Webhook;

@@ -1,11 +1,11 @@
 import {
   Client,
-  Intents,
   Guild,
   Channel,
   TextChannel,
   Message,
-  Collection
+  Collection,
+  IntentsBitField,
 } from 'discord.js';
 import { StatusResponse } from 'minecraft-server-util/dist/model/StatusResponse';
 
@@ -18,9 +18,11 @@ import MinecraftAPI from './MinecraftAPI';
 import DiscordWebhook from './Webhook';
 
 const McAPI: MinecraftAPI = new MinecraftAPI();
-const intents: Intents = new Intents(32767);
-const client: Client = new Client({ intents });
+const client = new Client({
+  intents: [IntentsBitField.Flags.Guilds, IntentsBitField.Flags.GuildMessages],
+});
 let embedMessage: Message, embedMessageId: string;
+const bot = client;
 
 CheckConfig();
 
@@ -28,8 +30,8 @@ client.login(Config.discord.botSecretToken);
 
 client.on('ready', () => Logger.log('Bot online...'));
 
-client.on('ready', async (bot: Client) => {
-  const { serverId, channelId }: { serverId: string; channelId: string } =
+client.on('ready', async () => {
+  const { channelId }: { serverId: string; channelId: string } =
     getServerIds(bot);
 
   const channel: Channel | undefined = bot.channels.cache.get(channelId);
@@ -85,7 +87,7 @@ const getServerIds = (bot: Client): { serverId: string; channelId: string } => {
 
   return {
     serverId: server.id,
-    channelId: channel.id
+    channelId: channel.id,
   };
 };
 
